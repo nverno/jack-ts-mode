@@ -212,7 +212,13 @@
    (or (treesit-node-child-by-field-name node "name")
        node)))
 
-(defvar jack-ts-mode--sentence-nodes nil
+(defvar jack-ts-mode--sentence-nodes
+  (rx (or (seq (or "class" "class_variable"
+                   "subroutine"
+                   "local_variable")
+               "_declaration")
+          (seq (or "if" "while" "let" "do" "return") "_statement")
+          "else_clause"))
   "See `treesit-sentence-type-regexp' for more information.")
 
 (defvar jack-ts-mode--sexp-nodes nil
