@@ -1,0 +1,44 @@
+/** Implements a graphical Boid */
+class Boid {
+  field int x, y;                           // screen location of center of boid
+  field int dx, dy;                         // movement vector
+  
+  /** Construct boid centered at (startX, startY), moving in direction <moveX,moveY> */
+  constructor Boid new(int startX, int startY, int moveX, int moveY) {
+    let x = startX;
+    let y = startY;
+    let dx = moveX;
+    let dy = moveY;
+    do draw(2000);
+    return this;
+  }
+
+  method void draw(int location)
+  {
+    var int memAddress;
+    let memAddress = 16384+location;
+    do Memory.poke(memAddress+0, 0);
+    do Memory.poke(memAddress+32, 0);
+    do Memory.poke(memAddress+64, 0);
+    do Memory.poke(memAddress+96, 256);
+    do Memory.poke(memAddress+128, 896);
+    do Memory.poke(memAddress+160, 1984);
+    do Memory.poke(memAddress+192, 4064);
+    do Memory.poke(memAddress+224, 896);
+    do Memory.poke(memAddress+256, 896);
+    do Memory.poke(memAddress+288, 896);
+    do Memory.poke(memAddress+320, 0);
+    do Memory.poke(memAddress+352, 0);
+    do Memory.poke(memAddress+384, 0);
+    do Memory.poke(memAddress+416, 0);
+    do Memory.poke(memAddress+448, 0);
+    do Memory.poke(memAddress+480, 0);
+    return;
+  }    
+
+  method void dispose()
+  {
+    do Memory.deAlloc(this);
+    return;
+  }
+}
