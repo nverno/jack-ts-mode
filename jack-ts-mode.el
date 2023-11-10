@@ -39,18 +39,17 @@
 ;;
 ;; Install the tree-sitter parser from https://github.com/nverno/tree-sitter-jack.
 ;;
-;; ```lisp
-;; (add-to-list 'treesit-language-source-alist
-;;              '(jack "https://github.com/nverno/tree-sitter-jack"))
-;; (treesit-install-language-grammar 'jack)
-;; ```
+;;   (add-to-list 'treesit-language-source-alist
+;;                '(jack "https://github.com/nverno/tree-sitter-jack"))
+;;   (treesit-install-language-grammar 'jack)
 ;;
 ;;; Code:
 
 (eval-when-compile (require 'cl-lib))
 (require 'treesit)
+(require 'c-ts-common)                  ; comment indentation + filling
 
-(defcustom jack-ts-mode-indent-level 4
+(defcustom jack-ts-mode-indent-level 2
   "Number of spaces for each indententation step."
   :group 'jack
   :type 'integer
@@ -90,6 +89,10 @@
      ((node-is "}") parent-bol 0)
      ((node-is "]") parent-bol 0)
      ((node-is "subroutine_body") parent-bol 0)
+     ((node-is "else_clause") parent-bol 0)
+     ((and (parent-is "comment") c-ts-common-looking-at-star)
+      c-ts-common-comment-start-after-first-star -1)
+     ((parent-is "comment") prev-adaptive-prefix 0)
      (no-node parent-bol 0)
      (catch-all parent-bol jack-ts-mode-indent-level)))
   "Tree-sitter indentation rules for `jack-ts-mode'.")
@@ -230,10 +233,7 @@
     (treesit-parser-create 'jack)
 
     ;; Comments
-    (setq-local comment-start "//")
-    (setq-local comment-end "")
-    (setq-local comment-start-skip "//+[ \t]*")
-    (setq-local parse-sexp-ignore-comments t)
+    (c-ts-common-comment-setup)
 
     ;; Indentation
     (setq-local treesit-simple-indent-rules jack-ts-mode--indent-rules)
